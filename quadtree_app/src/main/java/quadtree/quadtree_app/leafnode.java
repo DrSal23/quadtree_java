@@ -78,9 +78,18 @@ public class leafnode extends node {
      * Each level in the tree is indented to show hierarchy.
      */
     public void dump() {
+    	StringBuilder LeafNodeTabs = new StringBuilder();
+    	for(int i = 0; i<this.level; i++) {
+    		LeafNodeTabs.append("\t");
+    	}
+    	System.out.println(LeafNodeTabs.toString() + "LeafNode at ...");
         for (rectangle rect : rectangles) {
             // Indent based on level to show structure in the tree
-            System.out.println("\t".repeat(level) + rect);
+        	StringBuilder sb = new StringBuilder();
+        	for(int i = 0; i<this.level; i++) {
+        		sb.append("\t");
+        	}
+            System.out.println(sb.toString() + rect.toString());
         }
     }
 
