@@ -48,6 +48,6 @@ public class rectangle {
      */
     @Override
     public String toString() {
-        return String.format("Rectangle at (%.2f, %.2f): %.2f×%.2f", x, y, width, length);
+        return String.format("Rectangle at (%.2f, %.2f): %.2fx%.2f", x, y, width, length);
     }
 }

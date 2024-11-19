@@ -84,8 +84,21 @@ public class leafnode extends node {
         }
     }
 
-	public Object getRectangles() {
+
+	@Override
+	public boolean update(rectangle rect) {
+		for(int i=0; i<rectangles.size(); i++) {
+			rectangle tmp = rectangles.get(i);
+			if(tmp.getX() == rect.getX() && tmp.getY() == rect.getY()) {
+				tmp = rect;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public  ArrayList<rectangle> getRectangles() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.rectangles;
 	}
 }

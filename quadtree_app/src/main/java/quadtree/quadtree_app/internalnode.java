@@ -117,4 +117,9 @@ public class internalnode extends node {
         bottomLeft.dump();
         bottomRight.dump();
     }
+
+	@Override
+	public boolean update(rectangle rect) {
+		return topRight.update(rect) || topLeft.update(rect) || bottomRight.update(rect) || bottomLeft.update(rect);
+	}
 }

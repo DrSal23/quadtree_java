@@ -61,4 +61,6 @@ public abstract class node {
      * This method will be different for LeafNode and InternalNode.
      */
     public abstract void dump();
+    
+    public abstract boolean update(rectangle rect);
 }
