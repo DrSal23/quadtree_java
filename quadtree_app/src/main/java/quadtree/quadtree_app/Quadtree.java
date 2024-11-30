@@ -1,10 +1,12 @@
 package quadtree.quadtree_app;
 
+import java.util.ArrayList;
+
 public class Quadtree {
 	private node root;
 	
 	public Quadtree() {
-		this.root = new leafnode(10.0, 10.0, 100.0, 100.0,1);
+		this.root = new leafnode(-50.0, -50.0, 50.0, 50.0,1);
 	}
 	
 	public void dump() {
@@ -17,9 +19,29 @@ public class Quadtree {
      *
      * @param rectangle The rectangle to insert.
      */
-    public void insert(rectangle rectangle) {
-    	this.root.insert(rectangle);
+    public boolean insert(rectangle rectangle) {
+    	boolean flag = root.insert(rectangle);
+    	
+    	if(!flag) {
+    		if(this.root instanceof leafnode && ((leafnode) this.root).getRectangles().size() == 5) {
+        		// ensures this only get called when the node is at the limit 5
+    			// else a double insert happened
+    			ArrayList<rectangle> rectangles = ((leafnode)this.root).getRectangles();
+        		this.root = new internalnode(-50.0, -50.0, 50.0, 50.0,1);
+        		this.root.insert(rectangle);
+        		
+        		for(rectangle rect : rectangles) {
+        			this.root.insert(rect);
+        		}	
+    		}
+    		else {
+    			return false;
+    		}
+    	}
+    	
+    	return true;
     }
+    
 
     /**
      * Finds a rectangle in the node by its x and y coordinates.
@@ -38,8 +60,8 @@ public class Quadtree {
      * @param x The x-coordinate of the rectangle to delete.
      * @param y The y-coordinate of the rectangle to delete.
      */
-    public void delete(double x, double y) {
-    	this.root.delete(x,y);
+    public boolean delete(double x, double y) {
+    	return this.root.delete(x,y);
     }
 
     /**

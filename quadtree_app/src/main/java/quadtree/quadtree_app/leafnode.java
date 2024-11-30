@@ -22,8 +22,9 @@ public class leafnode extends node {
      */
     public leafnode(double xMin, double yMin, double xMax, double yMax, int level) {
         super(xMin, yMin, xMax, yMax, level); // Call the superclass (Node) constructor
-        this.rectangles = new ArrayList<>(); // Initialize the list of rectangles
+        this.rectangles = new ArrayList<rectangle>(); // Initialize the list of rectangles
     }
+    
 
     /**
      * Inserts a rectangle into the node.
@@ -31,12 +32,18 @@ public class leafnode extends node {
      *
      * @param rectangle The rectangle to insert.
      */
-    public void insert(rectangle rectangle) {
+    public boolean insert(rectangle rectangle) {
+        for (rectangle rect : rectangles) {
+            if (rect.getX() == rectangle.getX() && rect.getY() == rectangle.getY()) {
+                System.out.println("You can not double insert at a position.");
+                return false; // Prevent duplicate insertion
+            }
+        }
         if (rectangles.size() < 5) {
             rectangles.add(rectangle); // Add the rectangle if there's space
+            return true;
         } else {
-            // Node needs to split into an InternalNode (we'll define this later)
-            System.out.println("Splitting node at level " + level);
+            return false; // Node needs to split
         }
     }
 
@@ -53,7 +60,7 @@ public class leafnode extends node {
                 return rect; // Return the found rectangle
             }
         }
-        System.out.println("Nothing is at (" + x + ", " + y + ")."); // Print message if not found
+        System.out.println(String.format("Nothing is at (%.2f, %.2f).", x, y)); // Print message if not found
         return null; // Return null if no rectangle was found
     }
 
@@ -63,15 +70,22 @@ public class leafnode extends node {
      * @param x The x-coordinate of the rectangle to delete.
      * @param y The y-coordinate of the rectangle to delete.
      */
-    public void delete(double x, double y) {
-        rectangle toDelete = find(x, y); // Try to find the rectangle
-        if (toDelete != null) {
-            rectangles.remove(toDelete); // Remove if found
-            System.out.println("Deleted rectangle at (" + x + ", " + y + ").");
-        } else {
-            System.out.println("Nothing to delete at (" + x + ", " + y + ")."); // Print if not found
+    public boolean delete(double x, double y) {   
+        boolean found = false;
+        for (int i = 0; i < rectangles.size(); i++) {
+            rectangle rect = rectangles.get(i);
+            if (rect.getX() == x && rect.getY() == y) {
+                rectangles.remove(i);
+                return true;
+            }
         }
+        if (!found) {
+            System.out.println(String.format("Nothing to delete at (%.2f, %.2f).", x, y));
+            return false;
+        }
+        return true;
     }
+
 
     /**
      * Prints out all rectangles in this node.
@@ -79,32 +93,29 @@ public class leafnode extends node {
      */
     public void dump() {
     	StringBuilder LeafNodeTabs = new StringBuilder();
-    	for(int i = 0; i<this.level; i++) {
+    	for(int i = 0; i<this.level - 1; i++) {
     		LeafNodeTabs.append("\t");
     	}
-    	System.out.println(LeafNodeTabs.toString() + "LeafNode at ...");
-        for (rectangle rect : rectangles) {
-            // Indent based on level to show structure in the tree
-        	StringBuilder sb = new StringBuilder();
-        	for(int i = 0; i<this.level; i++) {
-        		sb.append("\t");
-        	}
-            System.out.println(sb.toString() + rect.toString());
+    	System.out.println(LeafNodeTabs.toString() + String.format("Leaf Node - Rectangle at (%.2f, %.2f): %.2fx%.2f", xMin, yMin, xMax - xMin, yMax - yMin) );
+        LeafNodeTabs.append("\t");
+    	for (rectangle rect : this.rectangles) {
+            System.out.println(LeafNodeTabs.toString() + rect.toString());
         }
     }
 
 
 	@Override
 	public boolean update(rectangle rect) {
-		for(int i=0; i<rectangles.size(); i++) {
-			rectangle tmp = rectangles.get(i);
-			if(tmp.getX() == rect.getX() && tmp.getY() == rect.getY()) {
-				tmp = rect;
-				return true;
-			}
-		}
-		return false;
+	    for (int i = 0; i < rectangles.size(); i++) {
+	        rectangle tmp = rectangles.get(i);
+	        if (tmp.getX() == rect.getX() && tmp.getY() == rect.getY()) {
+	            rectangles.set(i, rect); // Replace the rectangle in the list
+	            return true;
+	        }
+	    }
+	    return false; // Return false if no matching rectangle was found
 	}
+
 
 	public  ArrayList<rectangle> getRectangles() {
 		// TODO Auto-generated method stub

@@ -35,21 +35,16 @@ class App{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(commands.toString());
 		
 		String command;
 		for(int i = 0 ; i<commands.size(); i++) {
 			command = commands.get(i);
 			
 			String[] splitcmd = command.split(" ");
-			System.out.println(Arrays.toString(splitcmd));
-			// TODO: Implement each of these
 			if( splitcmd[0].equals("dump;")) {
-				System.out.println("DUMP");
 				root.dump();
 			}
 			else if(splitcmd[0].equals("insert")){
-				System.out.println("insert");
 				double x, y, length, width;
 				x = Double.valueOf(splitcmd[1]);
 				y = Double.valueOf(splitcmd[2]);
@@ -57,24 +52,56 @@ class App{
 				length = Double.valueOf(splitcmd[3]);
 				width = Double.valueOf(splitcmd[4].substring(0, splitcmd[4].length()-1));
 				rectangle rect = new rectangle(x,y,length, width);
-				root.insert(rect);
+				boolean res = root.insert(rect);
+				if(!res) {
+					return;
+				}
 			}
+			
 			else if(splitcmd[0].equals("delete")){
-				System.out.println("delete");
 				double x = Double.valueOf(splitcmd[1]);
-				double y = Double.valueOf(splitcmd[2]);
-				root.delete(x, y);
+				double y = Double.valueOf(splitcmd[2].substring(0, splitcmd[2].length()-1) );
+				
+				boolean res = root.delete(x, y);
+				if(!res) {
+					return;
+				}
 			}
+			
 			else if(splitcmd[0].equals("update")){
-				System.out.println("update");
-				root.update(null);
+				double x, y, length, width;
+				
+				x = Double.valueOf(splitcmd[1]);
+				y = Double.valueOf(splitcmd[2]);
+				
+				length = Double.valueOf(splitcmd[3]);
+				width = Double.valueOf(splitcmd[4].substring(0, splitcmd[4].length()-1));
+				
+				rectangle rect = new rectangle(x, y, length, width);
+				boolean res = root.update(rect);
+				if(!res) {
+					return;
+				}
 			}
+			
+			
 			else if(splitcmd[0].equals("find")){
-				System.out.println("find");
-				root.find(i, i);
+				double x, y;
+				
+				x = Double.valueOf(splitcmd[1]);
+				y = Double.valueOf(splitcmd[2].substring(0, splitcmd[2].length()-1));
+				
+				rectangle res = root.find(x, y);
+				if(res == null) {
+					return;
+				}
+				System.out.println(res.toString());
 			}
+			
+			
 			else {
 				System.out.println("Can't read the program input");
+				return;
 			}
 		}
 	}

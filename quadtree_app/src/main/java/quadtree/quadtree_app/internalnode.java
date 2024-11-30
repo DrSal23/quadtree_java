@@ -1,5 +1,7 @@
 package quadtree.quadtree_app;
 
+import java.util.ArrayList;
+
 /**
  * The InternalNode class represents a non-leaf node in the quadtree.
  * It divides its area into four quadrants (top-left, top-right, bottom-left, bottom-right),
@@ -42,20 +44,93 @@ public class internalnode extends node {
      * @param rectangle The rectangle to insert.
      */
     @Override
-    public void insert(rectangle rectangle) {
+    public boolean insert(rectangle rectangle) {
+    	boolean bottomLeftBool = true;
+    	boolean bottomRightBool = true;
+    	boolean topLeftBool = true;
+    	boolean topRightBool = true;
+    	
+    	
         if (rectangle.getX() < (xMin + xMax) / 2) {
             if (rectangle.getY() < (yMin + yMax) / 2) {
-                bottomLeft.insert(rectangle);
+            	bottomLeftBool = bottomLeft.insert(rectangle);
             } else {
-                topLeft.insert(rectangle);
+            	topLeftBool = topLeft.insert(rectangle);
             }
-        } else {
+        } 
+        
+        else {
+        	
             if (rectangle.getY() < (yMin + yMax) / 2) {
-                bottomRight.insert(rectangle);
+            	bottomRightBool = bottomRight.insert(rectangle);
             } else {
-                topRight.insert(rectangle);
+            	topRightBool = topRight.insert(rectangle);
             }
         }
+        
+        if(bottomLeftBool && bottomRightBool && topLeftBool && topRightBool) {
+        	return true;
+        }
+        else {
+        	
+        	
+        	if(!bottomLeftBool) {
+        		internalnode node = new internalnode(bottomLeft.xMin, bottomLeft.yMin, bottomLeft.xMax, bottomLeft.yMax, bottomLeft.level);
+        		ArrayList<rectangle> rectangles = ((leafnode) bottomLeft).getRectangles();
+        		
+        		for(rectangle rect : rectangles) {
+        			node.insert(rect);
+        		}
+        		
+        		node.insert(rectangle);
+        		
+        		this.bottomLeft = node;
+        		
+        	}
+        	
+        	else if(!bottomRightBool) {
+        		internalnode node = new internalnode(bottomRight.xMin, bottomRight.yMin, bottomRight.xMax, bottomRight.yMax, bottomRight.level);
+        		ArrayList<rectangle> rectangles = ((leafnode) bottomRight).getRectangles();
+        		
+        		for(rectangle rect : rectangles) {
+        			node.insert(rect);
+        		}
+        		
+        		node.insert(rectangle);
+        		
+        		this.bottomRight = node;
+        		
+        	}
+        	
+        	else if(!topLeftBool) {
+        		internalnode node = new internalnode(topLeft.xMin, topLeft.yMin, topLeft.xMax, topLeft.yMax, topLeft.level);
+        		ArrayList<rectangle> rectangles = ((leafnode) topLeft).getRectangles();
+        		
+        		for(rectangle rect : rectangles) {
+        			node.insert(rect);
+        		}
+        		
+        		node.insert(rectangle);
+        		
+        		this.topLeft = node;
+        		
+        	}
+        	
+        	else if(!topRightBool) {
+        		internalnode node = new internalnode(topRight.xMin, topRight.yMin, topRight.xMax, topRight.yMax, topRight.level);
+        		ArrayList<rectangle> rectangles = ((leafnode) topRight).getRectangles();
+        		
+        		for(rectangle rect : rectangles) {
+        			node.insert(rect);
+        		}
+        		
+        		node.insert(rectangle);
+        		
+        		this.topRight = node;
+        		
+        	}
+        }
+        return true;
     }
 
     /**
@@ -89,18 +164,18 @@ public class internalnode extends node {
      * @param y The y-coordinate of the rectangle to delete.
      */
     @Override
-    public void delete(double x, double y) {
+    public boolean delete(double x, double y) {
         if (x < (xMin + xMax) / 2) {
             if (y < (yMin + yMax) / 2) {
-                bottomLeft.delete(x, y);
+                return bottomLeft.delete(x, y);
             } else {
-                topLeft.delete(x, y);
+                return topLeft.delete(x, y);
             }
         } else {
             if (y < (yMin + yMax) / 2) {
-                bottomRight.delete(x, y);
+                return bottomRight.delete(x, y);
             } else {
-                topRight.delete(x, y);
+                return topRight.delete(x, y);
             }
         }
     }
@@ -110,7 +185,7 @@ public class internalnode extends node {
      */
     @Override
     public void dump() {
-        System.out.println("\t".repeat(level) + "Internal Node -");
+        System.out.println("\t".repeat(level - 1) + String.format("Internal Node - Rectangle at (%.2f, %.2f): %.2fx%.2f", xMin, yMin, xMax - xMin, yMax - yMin) );
         
         topLeft.dump();
         topRight.dump();

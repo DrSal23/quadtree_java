@@ -37,7 +37,7 @@ public abstract class node {
      *
      * @param rectangle The rectangle to insert.
      */
-    public abstract void insert(rectangle rectangle);
+    public abstract boolean insert(rectangle rectangle);
 
     /**
      * Finds a rectangle in the node by its x and y coordinates.
@@ -54,7 +54,7 @@ public abstract class node {
      * @param x The x-coordinate of the rectangle to delete.
      * @param y The y-coordinate of the rectangle to delete.
      */
-    public abstract void delete(double x, double y);
+    public abstract boolean delete(double x, double y);
 
     /**
      * Prints out the contents of the node, including its children nodes and rectangles.

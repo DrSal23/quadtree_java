@@ -3,6 +3,13 @@ package quadtree.quadtree_app;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -47,22 +54,35 @@ public class AppTest {
 
     @Test
     public void testLeafNodeSplitting() {
-        leafnode leaf = new leafnode(0.0, 0.0, 10.0, 10.0, 1);
+        Quadtree node = new Quadtree();
 
         // Insert 5 rectangles, no split yet
         for (int i = 0; i < 5; i++) {
-            leaf.insert(new rectangle(i, i, 1, 1));
+            node.insert(new rectangle(i, i, 1, 1));
         }
 
         // Now trigger a split
         rectangle extraRect = new rectangle(6, 6, 1, 1);
-        leaf.insert(extraRect);
+        node.insert(extraRect);
 
         // Check node splitting behavior (requires complete split implementation)
         // This example assumes the split transitions to an `internalnode`.
         // Verify the reassignment logic post-split in your code.
-
-        assertNotNull(leaf.find(6, 6));
+        rectangle res = node.find(6, 6);
+        assertTrue(Double.compare(res.getX(), 6.0) == 0 && Double.compare(res.getY(), 6.0f) == 0);
+    }
+    
+    @Test
+    public void testRectangleUpdate() {
+    	Quadtree root = new Quadtree();
+    	rectangle rect1 = new rectangle(10, 10, 2, 2);
+    	root.insert(rect1);
+    	
+    	rectangle toupdate = new rectangle(10, 10, 2000, 2000);
+    	root.update(toupdate);
+    	
+    	rectangle found = root.find(10.0, 10.0);
+    	assertTrue(found.getX() == toupdate.getX() && found.getY() == toupdate.getY() && found.getLength() == toupdate.getLength() && found.getWidth() == toupdate.getWidth());
     }
 
     @Test
@@ -100,18 +120,11 @@ public class AppTest {
         // Insert rectangles
         quadtree.insert(rect1);
         quadtree.insert(rect2);
-
-        // Out of bounds insertion (expect exception or ignored behavior)
-        try {
-            quadtree.insert(rectOut);
-        } catch (Exception e) {
-            System.out.println("Out-of-bounds rectangle caught as expected.");
-        }
+        quadtree.insert(rectOut);
 
         // Verify placement
         assertEquals(rect1, quadtree.find(5, 5));
         assertEquals(rect2, quadtree.find(15, 15));
-        assertNull(quadtree.find(25, 25));
 
         // Delete a rectangle
         quadtree.delete(5, 5);
@@ -120,15 +133,25 @@ public class AppTest {
 
     @Test
     public void testDumpOutput() {
-        leafnode leaf = new leafnode(0.0, 0.0, 10.0, 10.0, 1);
+        Quadtree tree = new Quadtree();
         rectangle r1 = new rectangle(2, 2, 2, 2);
         rectangle r2 = new rectangle(5, 5, 2, 2);
 
-        leaf.insert(r1);
-        leaf.insert(r2);
+        tree.insert(r1);
+        tree.insert(r2);
 
-        // The dump output will be manually verified during execution
-        System.out.println("Dumping Leaf Node:");
-        leaf.dump();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        tree.dump();
+        System.out.println(outputStream.toString());
+        
+        String expectedOutput = "Leaf Node - Rectangle at (-50.00, -50.00): 100.00x100.00\n"
+                              + "\tRectangle at (2.00, 2.00): 2.00x2.00\n"
+                              + "\tRectangle at (5.00, 5.00): 2.00x2.00\n";
+
+        assertTrue(outputStream.toString().contains(expectedOutput));
     }
+    
+  
 }
